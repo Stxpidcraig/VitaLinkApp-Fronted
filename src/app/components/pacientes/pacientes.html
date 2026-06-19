@@ -1,0 +1,82 @@
+<div class="pacientes-container">
+  <div class="header">
+    <h2>Gestión de Pacientes</h2>
+    <button class="btn-nuevo" (click)="nuevo()">+ Nuevo Paciente</button>
+  </div>
+
+  <div class="formulario" *ngIf="modoEdicion || pacienteSeleccionado === null">
+    <h3>{{ modoEdicion ? 'Editar Paciente' : 'Nuevo Paciente' }}</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>DNI</label>
+        <input type="text" [(ngModel)]="formulario.dni" placeholder="DNI" />
+      </div>
+      <div class="form-group">
+        <label>Nombres</label>
+        <input type="text" [(ngModel)]="formulario.nombres" placeholder="Nombres" />
+      </div>
+      <div class="form-group">
+        <label>Apellidos</label>
+        <input type="text" [(ngModel)]="formulario.apellidos" placeholder="Apellidos" />
+      </div>
+      <div class="form-group">
+        <label>Fecha de Nacimiento</label>
+        <input type="date" [(ngModel)]="formulario.fechaNacimiento" />
+      </div>
+      <div class="form-group">
+        <label>Sexo</label>
+        <select [(ngModel)]="formulario.sexo">
+          <option value="">Seleccionar</option>
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input type="text" [(ngModel)]="formulario.telefono" placeholder="Teléfono" />
+      </div>
+      <div class="form-group">
+        <label>Correo</label>
+        <input type="email" [(ngModel)]="formulario.correo" placeholder="Correo" />
+      </div>
+      <div class="form-group">
+        <label>Dirección</label>
+        <input type="text" [(ngModel)]="formulario.direccion" placeholder="Dirección" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-guardar" (click)="guardar()">Guardar</button>
+      <button class="btn-cancelar" (click)="nuevo()">Cancelar</button>
+    </div>
+  </div>
+
+  <table class="tabla">
+    <thead>
+    <tr>
+      <th>DNI</th>
+      <th>Nombres</th>
+      <th>Apellidos</th>
+      <th>Fecha Nac.</th>
+      <th>Sexo</th>
+      <th>Teléfono</th>
+      <th>Correo</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let paciente of pacientes">
+      <td>{{ paciente.dni }}</td>
+      <td>{{ paciente.nombres }}</td>
+      <td>{{ paciente.apellidos }}</td>
+      <td>{{ paciente.fechaNacimiento }}</td>
+      <td>{{ paciente.sexo }}</td>
+      <td>{{ paciente.telefono }}</td>
+      <td>{{ paciente.correo }}</td>
+      <td>
+        <button class="btn-editar" (click)="editar(paciente)">Editar</button>
+        <button class="btn-eliminar" (click)="eliminar(paciente.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
