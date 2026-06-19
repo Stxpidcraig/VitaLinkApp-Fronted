@@ -1,0 +1,62 @@
+<div class="medicos-container">
+  <div class="header">
+    <h2>Gestión de Médicos</h2>
+    <button class="btn-nuevo" (click)="nuevo()">+ Nuevo Médico</button>
+  </div>
+
+  <div class="formulario">
+    <h3>{{ modoEdicion ? 'Editar Médico' : 'Nuevo Médico' }}</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombres</label>
+        <input type="text" [(ngModel)]="formulario.nombres" placeholder="Nombres" />
+      </div>
+      <div class="form-group">
+        <label>Apellidos</label>
+        <input type="text" [(ngModel)]="formulario.apellidos" placeholder="Apellidos" />
+      </div>
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input type="text" [(ngModel)]="formulario.telefono" placeholder="Teléfono" />
+      </div>
+      <div class="form-group">
+        <label>Correo</label>
+        <input type="email" [(ngModel)]="formulario.correo" placeholder="Correo" />
+      </div>
+      <div class="form-group">
+        <label>ID Especialidad</label>
+        <input type="number" [(ngModel)]="formulario.especialidadId" placeholder="ID Especialidad" />
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-guardar" (click)="guardar()">Guardar</button>
+      <button class="btn-cancelar" (click)="nuevo()">Cancelar</button>
+    </div>
+  </div>
+
+  <table class="tabla">
+    <thead>
+    <tr>
+      <th>Nombres</th>
+      <th>Apellidos</th>
+      <th>Teléfono</th>
+      <th>Correo</th>
+      <th>Especialidad</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let medico of medicos">
+      <td>{{ medico.nombres }}</td>
+      <td>{{ medico.apellidos }}</td>
+      <td>{{ medico.telefono }}</td>
+      <td>{{ medico.correo }}</td>
+      <td>{{ medico.especialidad }}</td>
+      <td>
+        <button class="btn-editar" (click)="editar(medico)">Editar</button>
+        <button class="btn-eliminar" (click)="eliminar(medico.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
