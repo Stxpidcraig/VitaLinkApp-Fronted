@@ -21,10 +21,23 @@ export class LoginComponent {
 
   login(): void {
     this.authService.login(this.usuario, this.password).subscribe({
-      next: (response) => {
-        this.authService.guardarToken(response.token);
-        this.router.navigate(['/pacientes']);
+     next: (response) => {
+
+        this.authService.guardarSesion(
+        response.token,
+        response.rol
+        );
+
+        if(response.rol === 'ROLE_ADMIN'){
+        this.router.navigate(['/admin']);
+        }
+
+         if(response.rol === 'ROLE_MEDICO'){
+        this.router.navigate(['/medico']);
+          }
+
       },
+
       error: () => {
         this.error = 'Usuario o contraseña incorrectos';
       }
