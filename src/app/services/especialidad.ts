@@ -6,8 +6,8 @@ import { AuthService } from './auth';
 @Injectable({
   providedIn: 'root',
 })
-export class MedicoService {
-  private apiUrl = 'http://localhost:8080/api/medicos';
+export class EspecialidadService {
+  private apiUrl = 'http://localhost:8080/api/especialidades';
 
   constructor(
     private http: HttpClient,
@@ -28,12 +28,12 @@ export class MedicoService {
     return this.http.get<any>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
-  crear(medico: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, medico, { headers: this.getHeaders() });
+  crear(especialidad: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, especialidad, { headers: this.getHeaders() });
   }
 
-  actualizar(id: number, medico: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, medico, { headers: this.getHeaders() });
+  actualizar(id: number, especialidad: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, especialidad, { headers: this.getHeaders() });
   }
 
   eliminar(id: number): Observable<void> {

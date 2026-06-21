@@ -8,7 +8,7 @@ import { AuthService } from './auth';
 })
 export class PacienteService {
 
-  private apiUrl = 'http://localhost:8083/api/pacientes';
+  private apiUrl = 'http://localhost:8080/api/pacientes';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
