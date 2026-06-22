@@ -1,0 +1,54 @@
+.admin-container {
+  padding: 40px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.admin-container h1 {
+  color: #1e3a8a;
+  font-size: 28px;
+  margin-bottom: 30px;
+  font-weight: 700;
+  border-bottom: 3px solid #3b82f6;
+  padding-bottom: 10px;
+  display: inline-block;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 10px;
+}
+
+.dashboard-grid button {
+  background: white;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  padding: 30px 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.dashboard-grid button:hover {
+  transform: translateY(-4px);
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+}
+
+/* Colores alternos sutiles en los bordes izquierdos para romper la monotonía */
+.dashboard-grid button:nth-child(odd) {
+  border-left: 5px solid #3b82f6;
+}
+
+.dashboard-grid button:nth-child(even) {
+  border-left: 5px solid #10b981;
+}
