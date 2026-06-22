@@ -7,6 +7,7 @@ import { MedicoDashboardComponent } from './components/medico-dashboard/medico-d
 import { EspecialidadesComponent } from './components/especialidades/especialidades';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard, medicoGuard } from './guards/role.guard';
+import { CitasComponent } from './components/citas/citas';
 
 
 export const routes: Routes = [
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'admin',component: AdminDashboardComponent, canActivate: [authGuard,adminGuard]},
   { path: 'medico', component: MedicoDashboardComponent, canActivate: [authGuard, medicoGuard]},
   { path: 'pacientes', component: PacientesComponent },
+  { path: 'citas', component: CitasComponent },
   { path: 'medicos', component: MedicosComponent },
 ];
