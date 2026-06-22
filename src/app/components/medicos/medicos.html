@@ -1,7 +1,7 @@
 <div class="medicos-container">
   <div class="header">
     <h2>Gestión de Médicos</h2>
-    <button class="btn-nuevo" (click)="nuevo()">+ Nuevo Médico</button>
+    <button type="button" class="btn-nuevo" (click)="nuevo()">+ Nuevo Médico</button>
   </div>
 
   <div class="formulario">
@@ -24,13 +24,18 @@
         <input type="email" [(ngModel)]="formulario.correo" placeholder="Correo" />
       </div>
       <div class="form-group">
-        <label>ID Especialidad</label>
-        <input type="number" [(ngModel)]="formulario.especialidadId" placeholder="ID Especialidad" />
-      </div>
+  <label>Especialidad</label>
+  <select [(ngModel)]="formulario.especialidadId">
+    <option [value]="null">Seleccionar especialidad</option>
+    <option *ngFor="let esp of especialidades" [value]="esp.id">
+      {{ esp.nombre }}
+    </option>
+  </select>
+</div>
     </div>
     <div class="form-actions">
-      <button class="btn-guardar" (click)="guardar()">Guardar</button>
-      <button class="btn-cancelar" (click)="nuevo()">Cancelar</button>
+      <button type="button" class="btn-guardar" (click)="guardar()">Guardar</button>
+      <button type="button" class="btn-cancelar" (click)="nuevo()">Cancelar</button>
     </div>
   </div>
 
@@ -51,10 +56,10 @@
       <td>{{ medico.apellidos }}</td>
       <td>{{ medico.telefono }}</td>
       <td>{{ medico.correo }}</td>
-      <td>{{ medico.especialidad }}</td>
+      <td>{{ medico.especialidad?.nombre }}</td>
       <td>
-        <button class="btn-editar" (click)="editar(medico)">Editar</button>
-        <button class="btn-eliminar" (click)="eliminar(medico.id)">Eliminar</button>
+        <button type="button" class="btn-editar" (click)="editar(medico)">Editar</button>
+        <button type="button" class="btn-eliminar" (click)="eliminar(medico.id)">Eliminar</button>
       </td>
     </tr>
     </tbody>

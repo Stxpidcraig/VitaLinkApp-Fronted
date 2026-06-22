@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MedicoService } from '../../services/medico';
+import { EspecialidadService } from '../../services/especialidad';
 
 @Component({
   selector: 'app-medicos',
@@ -12,6 +13,7 @@ import { MedicoService } from '../../services/medico';
 })
 export class MedicosComponent implements OnInit {
   medicos: any[] = [];
+  especialidades:any[] = [];
   medicoSeleccionado: any = null;
   modoEdicion: boolean = false;
 
@@ -20,13 +22,21 @@ export class MedicosComponent implements OnInit {
     apellidos: '',
     telefono: '',
     correo: '',
-    especialidadId: '',
+    especialidadId: null as any,
   };
 
-  constructor(private medicoService: MedicoService) {}
+  constructor(private medicoService: MedicoService, private especialidadService: EspecialidadService) {}
 
   ngOnInit(): void {
     this.listar();
+    this.cargarEspecialidades();
+  }
+
+  cargarEspecialidades(): void {
+    this.especialidadService.listar().subscribe({
+      next: (data) => (this.especialidades = data),
+      error: (err) => console.error(err),
+    });
   }
 
   listar(): void {
@@ -39,29 +49,37 @@ export class MedicosComponent implements OnInit {
   nuevo(): void {
     this.modoEdicion = false;
     this.medicoSeleccionado = null;
-    this.formulario = { nombres: '', apellidos: '', telefono: '', correo: '', especialidadId: '' };
+    this.formulario = { nombres: '', apellidos: '', telefono: '', correo: '', especialidadId: null };
   }
 
   editar(medico: any): void {
     this.modoEdicion = true;
     this.medicoSeleccionado = medico;
-    this.formulario = { ...medico };
+    this.formulario = {
+      nombres: medico.nombres,
+      apellidos: medico.apellidos,
+      telefono: medico.telefono,
+      correo: medico.correo,
+      especialidadId: medico.especialidad?.id
+    };
   }
 
   guardar(): void {
+    const payload = {
+      nombres: this.formulario.nombres,
+      apellidos: this.formulario.apellidos,
+      telefono: this.formulario.telefono,
+      correo: this.formulario.correo,
+      especialidad: this.formulario.especialidadId ? { id: this.formulario.especialidadId } : null
+    };
+
     if (this.modoEdicion) {
-      this.medicoService.actualizar(this.medicoSeleccionado.id, this.formulario).subscribe({
-        next: () => {
-          this.listar();
-          this.nuevo();
-        },
+      this.medicoService.actualizar(this.medicoSeleccionado.id, payload).subscribe({
+      next: () => { this.listar(); this.nuevo(); },
       });
     } else {
-      this.medicoService.crear(this.formulario).subscribe({
-        next: () => {
-          this.listar();
-          this.nuevo();
-        },
+    this.medicoService.crear(payload).subscribe({
+      next: () => { this.listar(); this.nuevo(); },
       });
     }
   }
