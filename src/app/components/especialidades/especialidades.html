@@ -4,6 +4,11 @@
     <button class="btn-nuevo" (click)="nuevo()">+ Nueva Especialidad</button>
   </div>
 
+  <div class="buscador">
+    <input type="text" [(ngModel)]="busqueda" placeholder="Buscar especialidad..." />
+    <button class="btn-limpiar" (click)="limpiarBuscador()">Limpiar</button>
+  </div>
+
   <div class="formulario">
     <h3>{{ modoEdicion ? 'Editar Especialidad' : 'Nueva Especialidad' }}</h3>
     <div class="form-grid">
@@ -31,7 +36,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let especialidad of especialidades">
+      <tr *ngFor="let especialidad of especialidadesFiltradas">
         <td>{{ especialidad.nombre }}</td>
         <td>{{ especialidad.descripcion }}</td>
         <td>

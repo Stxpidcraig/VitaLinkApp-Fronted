@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MedicoService } from '../../services/medico';
@@ -25,7 +25,7 @@ export class MedicosComponent implements OnInit {
     especialidadId: null as any,
   };
 
-  constructor(private medicoService: MedicoService, private especialidadService: EspecialidadService) {}
+  constructor(private medicoService: MedicoService, private especialidadService: EspecialidadService, private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.listar();
@@ -41,15 +41,23 @@ export class MedicosComponent implements OnInit {
 
   listar(): void {
     this.medicoService.listar().subscribe({
-      next: (data) => (this.medicos = data),
+      next: (data) => {
+      this.medicos = [...data];
+      this.cd.detectChanges();
+    },
       error: (err) => console.error(err),
     });
   }
 
+  limpiarBuscador(): void {
+  this.busqueda = '';
+  this.busquedaEspecialidad = '';
+  }
+
   nuevo(): void {
-    this.modoEdicion = false;
-    this.medicoSeleccionado = null;
-    this.formulario = { nombres: '', apellidos: '', telefono: '', correo: '', especialidadId: null };
+  this.modoEdicion = false;
+  this.medicoSeleccionado = null;
+  this.formulario = { nombres: '', apellidos: '', telefono: '', correo: '', especialidadId: null };
   }
 
   editar(medico: any): void {
@@ -62,6 +70,7 @@ export class MedicosComponent implements OnInit {
       correo: medico.correo,
       especialidadId: medico.especialidad?.id
     };
+    this.cd.detectChanges();
   }
 
   guardar(): void {
@@ -91,4 +100,16 @@ export class MedicosComponent implements OnInit {
       });
     }
   }
+
+  busqueda: string = '';
+  busquedaEspecialidad: string = '';
+
+  get medicosFiltrados(): any[] {
+  return this.medicos.filter(m =>
+    (m.nombres.toLowerCase().includes(this.busqueda.toLowerCase()) ||
+    m.apellidos.toLowerCase().includes(this.busqueda.toLowerCase())) &&
+    m.especialidad?.nombre.toLowerCase().includes(this.busquedaEspecialidad.toLowerCase())
+  );
+  }
+
 }

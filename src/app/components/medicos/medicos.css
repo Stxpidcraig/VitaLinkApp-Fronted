@@ -146,3 +146,42 @@
   cursor: pointer;
   font-size: 12px;
 }
+
+.buscador {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.buscador input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.buscador input:focus {
+  border-color: #2563eb;
+}
+
+.buscador input::placeholder {
+  color: #94a3b8;
+}
+
+.btn-limpiar {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.btn-limpiar:hover {
+  background-color: #4b5563;
+}

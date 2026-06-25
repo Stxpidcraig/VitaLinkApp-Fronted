@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PacienteService } from '../../services/paciente';
@@ -27,7 +27,7 @@ export class PacientesComponent implements OnInit {
     direccion: ''
   };
 
-  constructor(private pacienteService: PacienteService) {}
+  constructor(private pacienteService: PacienteService, private cd:ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.listar();
@@ -35,9 +35,16 @@ export class PacientesComponent implements OnInit {
 
   listar(): void {
     this.pacienteService.listar().subscribe({
-      next: (data) => this.pacientes = data,
+      next: (data) => {this.pacientes = [...data];
+        this.cd.detectChanges();
+      },
       error: (err) => console.error(err)
     });
+  }
+
+  limpiarBuscador(): void {
+  this.busqueda = '';
+  this.busquedaDni = '';
   }
 
   nuevo(): void {
@@ -50,6 +57,7 @@ export class PacientesComponent implements OnInit {
     this.modoEdicion = true;
     this.pacienteSeleccionado = paciente;
     this.formulario = { ...paciente };
+    this.cd.detectChanges();
   }
 
   guardar(): void {
@@ -70,5 +78,15 @@ export class PacientesComponent implements OnInit {
         next: () => this.listar()
       });
     }
+  }
+
+  busqueda: string = '';
+  busquedaDni: string = '';
+  get pacientesFiltrados(): any[] {
+  return this.pacientes.filter(p =>
+    (p.nombres.toLowerCase().includes(this.busqueda.toLowerCase()) ||
+    p.apellidos.toLowerCase().includes(this.busqueda.toLowerCase())) &&
+    p.dni.startsWith(this.busquedaDni)
+  );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EspecialidadService } from '../../services/especialidad';
@@ -20,7 +20,7 @@ export class EspecialidadesComponent implements OnInit {
     descripcion: '',
   };
 
-  constructor(private especialidadService: EspecialidadService) {}
+  constructor(private especialidadService: EspecialidadService, private cd: ChangeDetectorRef,) {}
 
   ngOnInit(): void {
     this.listar();
@@ -28,7 +28,9 @@ export class EspecialidadesComponent implements OnInit {
 
   listar(): void {
     this.especialidadService.listar().subscribe({
-      next: (data) => (this.especialidades = data),
+      next: (data) => {this.especialidades = [...data];
+        this.cd.detectChanges();
+      },
       error: (err) => console.error(err),
     });
   }
@@ -43,6 +45,7 @@ export class EspecialidadesComponent implements OnInit {
     this.modoEdicion = true;
     this.especialidadSeleccionada = especialidad;
     this.formulario = { ...especialidad };
+    this.cd.detectChanges();
   }
 
   guardar(): void {
@@ -63,5 +66,18 @@ export class EspecialidadesComponent implements OnInit {
         next: () => this.listar(),
       });
     }
+  }
+
+  busqueda: string = '';
+
+  get especialidadesFiltradas(): any[] {
+    return this.especialidades.filter(e =>
+    e.nombre.toLowerCase().includes(this.busqueda.toLowerCase()) ||
+    e.descripcion?.toLowerCase().includes(this.busqueda.toLowerCase())
+  );
+  }
+
+  limpiarBuscador(): void {
+  this.busqueda = '';
   }
 }
