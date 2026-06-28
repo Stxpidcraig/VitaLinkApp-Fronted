@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PacienteService } from '../../services/paciente';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pacientes',
@@ -27,7 +28,7 @@ export class PacientesComponent implements OnInit {
     direccion: ''
   };
 
-  constructor(private pacienteService: PacienteService, private cd:ChangeDetectorRef) {}
+  constructor(private pacienteService: PacienteService, private cd:ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void {
     this.listar();
@@ -89,4 +90,8 @@ export class PacientesComponent implements OnInit {
     p.dni.startsWith(this.busquedaDni)
   );
   }
+
+  verHistoria(pacienteId: number): void {
+  this.router.navigate(['/historia-clinica', pacienteId]);
+}
 }

@@ -1,4 +1,9 @@
-.medicos-container {
+.readonly {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  color: #6b7280;
+}
+.consultas-container {
   padding: 30px;
   font-family: Arial, sans-serif;
 }
@@ -54,6 +59,10 @@
   flex-direction: column;
 }
 
+.full-width {
+  grid-column: 1 / -1;
+}
+
 .form-group label {
   font-size: 13px;
   font-weight: 500;
@@ -75,6 +84,27 @@
   border-color: #2563eb;
 }
 
+.form-group input.readonly {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.form-group textarea {
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-group textarea:focus {
+  border-color: #2563eb;
+}
+
 .form-actions {
   display: flex;
   gap: 12px;
@@ -91,6 +121,10 @@
   font-weight: 600;
 }
 
+.btn-guardar:hover {
+  background-color: #15803d;
+}
+
 .btn-cancelar {
   background-color: #6b7280;
   color: white;
@@ -99,6 +133,10 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.btn-cancelar:hover {
+  background-color: #4b5563;
 }
 
 .tabla {
@@ -122,6 +160,14 @@
   font-size: 14px;
 }
 
+.tabla td {
+  color: #374151;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tabla tbody tr:hover {
   background-color: #f0f4ff;
 }
@@ -135,6 +181,11 @@
   cursor: pointer;
   margin-right: 6px;
   font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-editar:hover {
+  background-color: #d97706;
 }
 
 .btn-eliminar {
@@ -145,136 +196,9 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
-}
-
-.buscador {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.buscador input {
-  flex: 1;
-  padding: 9px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-}
-
-.buscador input:focus {
-  border-color: #2563eb;
-}
-
-.buscador input::placeholder {
-  color: #94a3b8;
-}
-
-.btn-limpiar {
-  background-color: #6b7280;
-  color: white;
-  border: none;
-  padding: 9px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.btn-limpiar:hover {
-  background-color: #4b5563;
-}
-
-.btn-horarios {
-  background-color: #0891b2;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-right: 6px;
-  font-size: 12px;
   font-weight: 600;
 }
 
-.btn-horarios:hover {
-  background-color: #0e7490;
-}
-
-.fila-horarios td {
-  padding: 0 !important;
-  background-color: #f8faff;
-}
-
-.horarios-panel {
-  padding: 20px 24px;
-  border-top: 3px solid #2563eb;
-}
-
-.horarios-panel h4 {
-  color: #1e3a5f;
-  font-size: 16px;
-  margin-bottom: 16px;
-}
-
-.horarios-panel h5 {
-  color: #374151;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-
-.horario-form {
-  background: white;
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-}
-
-.form-grid-horario {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.tabla-horarios {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-}
-
-.tabla-horarios thead {
-  background-color: #0891b2;
-  color: white;
-}
-
-.tabla-horarios th,
-.tabla-horarios td {
-  padding: 10px 14px;
-  text-align: left;
-  font-size: 13px;
-}
-
-.tabla-horarios tbody tr:hover {
-  background-color: #f0f9ff;
-}
-
-.sin-horarios {
-  color: #6b7280;
-  font-size: 14px;
-  padding: 12px 0;
-}
-.horarios-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.horarios-panel-header h4 {
-  margin: 0;
+.btn-eliminar:hover {
+  background-color: #b91c1c;
 }

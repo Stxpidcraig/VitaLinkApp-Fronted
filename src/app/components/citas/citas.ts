@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { CitasService } from '../../services/citas';
 import { MedicoService } from '../../services/medico';
 import { PacienteService } from '../../services/paciente';
+import { DisponibilidadService } from '../../services/disponibilidad';
+import { EspecialidadService } from '../../services/especialidad';
 
 @Component({
   selector: 'app-citas',
@@ -15,18 +17,20 @@ import { PacienteService } from '../../services/paciente';
   styleUrl: './citas.css',
 })
 export class CitasComponent implements OnInit {
-
   citas: any[] = [];
   medicos: any[] = [];
   pacientes: any[] = [];
+  horariosLibres: string[] = [];
 
   citaSeleccionada: any = null;
   modoEdicion = false;
+  errorMensaje = '';
 
   formulario = {
-    estado: '',
+    estado: 'PENDIENTE',
     motivo: '',
-    fechaHora: '',
+    fecha: '',
+    horaSeleccionada: '',
     medicoId: null as number | null,
     pacienteId: null as number | null,
   };
@@ -35,6 +39,8 @@ export class CitasComponent implements OnInit {
     private citasService: CitasService,
     private medicoService: MedicoService,
     private pacienteService: PacienteService,
+    private disponibilidadService: DisponibilidadService,
+    private especialidadService: EspecialidadService,
     private cd: ChangeDetectorRef,
     private router: Router
   ) {}
@@ -43,14 +49,31 @@ export class CitasComponent implements OnInit {
     this.listar();
     this.listarMedicos();
     this.listarPacientes();
+    this.listarEspecialidades();
   }
+
+  listarEspecialidades(): void {
+  this.especialidadService.listar().subscribe({
+    next: (data) => (this.especialidades = data),
+    error: (err) => console.error(err),
+  });
+}
+get medicosFiltrados(): any[] {
+  if (!this.especialidadFiltro) return this.medicos;
+  return this.medicos.filter(m => m.especialidad?.id === this.especialidadFiltro);
+}
+
+onMedicoSeleccionado(): void {
+  const medico = this.medicos.find(m => m.id === this.formulario.medicoId);
+  if (medico) {
+    this.especialidadFiltro = medico.especialidad?.id ?? null;
+  }
+  this.consultarHorarios();
+}
 
   listar(): void {
     this.citasService.listar().subscribe({
-      next: (data: any) => {
-        this.citas = [...data];
-        this.cd.detectChanges();
-      },
+      next: (data) => { this.citas = [...data]; this.cd.detectChanges(); },
       error: (err) => console.error(err),
     });
   }
@@ -69,24 +92,57 @@ export class CitasComponent implements OnInit {
     });
   }
 
+  consultarHorarios(): void {
+    if (!this.formulario.medicoId || !this.formulario.fecha) return;
+
+    this.horariosLibres = [];
+    this.formulario.horaSeleccionada = '';
+
+    this.disponibilidadService
+      .obtenerHorariosLibres(this.formulario.medicoId, this.formulario.fecha)
+      .subscribe({
+        next: (data) => {
+          this.horariosLibres = data;
+          this.cd.detectChanges();
+        },
+        error: () => { this.horariosLibres = []; },
+      });
+  }
+
   guardar(): void {
-    const payload = {
-      estado: this.formulario.estado,
-      motivo: this.formulario.motivo,
-      fechaHora: this.formulario.fechaHora,
-      medico: { id: this.formulario.medicoId },
-      paciente: { id: this.formulario.pacienteId },
-    };
+    this.errorMensaje = '';
 
     if (this.modoEdicion) {
-      this.citasService.actualizar(this.citaSeleccionada.id, payload).subscribe(() => {
-        this.listar();
-        this.nuevo();
+
+      const payload = {
+        estado: this.formulario.estado,
+        motivo: this.formulario.motivo,
+        fechaHora: `${this.formulario.fecha}T${this.formulario.horaSeleccionada}`,
+        medico: { id: this.formulario.medicoId },
+        paciente: { id: this.formulario.pacienteId },
+      };
+      this.citasService.actualizar(this.citaSeleccionada.id, payload).subscribe({
+        next: () => { this.listar(); this.nuevo(); },
+        error: (err) => {
+        this.errorMensaje = err.error?.message || err.error || 'Error al actualizar';
+         this.cd.detectChanges();
+        },
       });
     } else {
-      this.citasService.crear(payload).subscribe(() => {
-        this.listar();
-        this.nuevo();
+
+      const dto = {
+        medicoId: this.formulario.medicoId,
+        pacienteId: this.formulario.pacienteId,
+        fechaHora: `${this.formulario.fecha}T${this.formulario.horaSeleccionada}`,
+        motivo: this.formulario.motivo,
+        estado: this.formulario.estado,
+      };
+      this.disponibilidadService.reservarCita(dto).subscribe({
+        next: () => { this.listar(); this.nuevo(); },
+        error: (err) => {
+        this.errorMensaje = err.error?.message || err.error || 'Horario no disponible';
+        this.cd.detectChanges();
+        },
       });
     }
   }
@@ -94,23 +150,22 @@ export class CitasComponent implements OnInit {
   editar(cita: any): void {
     this.modoEdicion = true;
     this.citaSeleccionada = cita;
-
-    this.formulario.estado = cita.estado;
-    this.formulario.motivo = cita.motivo;
-    this.formulario.fechaHora = cita.fechaHora;
-
-    this.formulario.medicoId = cita.medico?.id ?? null;
-    this.formulario.pacienteId = cita.paciente?.id ?? null;
-
+    const fechaHora = cita.fechaHora?.split('T');
+    this.formulario = {
+      estado: cita.estado,
+      motivo: cita.motivo,
+      fecha: fechaHora?.[0] ?? '',
+      horaSeleccionada: fechaHora?.[1]?.substring(0, 5) ?? '',
+      medicoId: cita.medico?.id ?? null,
+      pacienteId: cita.paciente?.id ?? null,
+    };
     this.cd.detectChanges();
-
   }
 
   eliminar(id: number): void {
-    if (confirm('¿Estás seguro de eliminar esta cita?')) {
+    if (confirm('¿Eliminar esta cita?')) {
       this.citasService.eliminar(id).subscribe({
         next: () => this.listar(),
-        error: (err) => console.error(err),
       });
     }
   }
@@ -118,17 +173,22 @@ export class CitasComponent implements OnInit {
   nuevo(): void {
     this.modoEdicion = false;
     this.citaSeleccionada = null;
-
+    this.horariosLibres = [];
+    this.errorMensaje = '';
     this.formulario = {
-      estado: '',
+      estado: 'PENDIENTE',
       motivo: '',
-      fechaHora: '',
-      medicoId: null as number | null,
-      pacienteId: null as number | null,
+      fecha: '',
+      horaSeleccionada: '',
+      medicoId: null,
+      pacienteId: null,
     };
   }
 
   irAdmin(): void {
     this.router.navigate(['/admin']);
   }
+
+  especialidades: any[] = [];
+  especialidadFiltro: number | null = null;
 }

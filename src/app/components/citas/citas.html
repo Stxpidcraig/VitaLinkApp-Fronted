@@ -1,94 +1,111 @@
 <div class="medicos-container">
+  <div class="header">
+    <h2>Gestión de Citas</h2>
+    <button class="btn-nuevo" (click)="nuevo()">+ Nueva Cita</button>
+  </div>
 
-    <div class="header">
-        <h2>Gestión de Citas</h2>
-        <button class="btn-nuevo" (click)="nuevo()">+ Nueva Cita</button>
+  <div class="formulario">
+    <h3>{{ modoEdicion ? 'Editar Cita' : 'Nueva Cita' }}</h3>
+
+    <div *ngIf="errorMensaje" class="error-msg">
+       {{ errorMensaje }}
     </div>
 
-    <div class="formulario">
-        <h3>{{ modoEdicion ? 'Editar Cita' : 'Nueva Cita' }}</h3>
+    <div class="form-grid">
+      <div class="form-group">
+  <label>Especialidad</label>
+  <select [(ngModel)]="especialidadFiltro" (ngModelChange)="formulario.medicoId = null; horariosLibres = []">
+    <option [ngValue]="null">-- Todas las especialidades --</option>
+    <option *ngFor="let e of especialidades" [ngValue]="e.id">{{ e.nombre }}</option>
+  </select>
+</div>
 
-        <div class="form-grid">
+<div class="form-group">
+  <label>Médico</label>
+  <select [(ngModel)]="formulario.medicoId" (ngModelChange)="onMedicoSeleccionado()">
+    <option [ngValue]="null">-- Selecciona médico --</option>
+    <option *ngFor="let m of medicosFiltrados" [ngValue]="m.id">
+      {{ m.nombres }} {{ m.apellidos }}
+    </option>
+  </select>
+</div>
 
-            <div class="form-group">
-                <label>Médico</label>
-                <select [(ngModel)]="formulario.medicoId">
-                    <option [ngValue]="null">-- Selecciona médico --</option>
+      <div class="form-group">
+        <label>Paciente</label>
+        <select [(ngModel)]="formulario.pacienteId">
+          <option [ngValue]="null">-- Selecciona paciente --</option>
+          <option *ngFor="let p of pacientes" [ngValue]="p.id">
+            {{ p.nombres }} {{ p.apellidos }}
+          </option>
+        </select>
+      </div>
 
-                    <option *ngFor="let m of medicos" [ngValue]="m.id">
-                        {{ m.nombres }} {{ m.apellidos }}
-                    </option>
-                </select>
-            </div>
+      <div class="form-group">
+        <label>Estado</label>
+        <select [(ngModel)]="formulario.estado">
+          <option value="PENDIENTE">PENDIENTE</option>
+          <option value="CONFIRMADA">CONFIRMADA</option>
+          <option value="CANCELADA">CANCELADA</option>
+        </select>
+      </div>
 
-            <div class="form-group">
-                <label>Paciente</label>
-                <select [(ngModel)]="formulario.pacienteId">
-                    <option [ngValue]="null">-- Selecciona paciente --</option>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" [(ngModel)]="formulario.fecha" (ngModelChange)="consultarHorarios()" />
+      </div>
 
-                    <option *ngFor="let p of pacientes" [ngValue]="p.id">
-                        {{ p.nombres }} {{ p.apellidos }}
-                    </option>
-                </select>
-            </div>
+      <div class="form-group">
+        <label>Horario disponible</label>
+        <select [(ngModel)]="formulario.horaSeleccionada"
+                [disabled]="horariosLibres.length === 0">
+          <option value="">
+            {{ horariosLibres.length === 0 ? '-- Selecciona médico y fecha primero --' : '-- Elige un horario --' }}
+          </option>
+          <option *ngFor="let h of horariosLibres" [ngValue]="h">
+            {{ h }}
+          </option>
+        </select>
+      </div>
 
-            <div class="form-group">
-                <label>Estado</label>
-                <select [(ngModel)]="formulario.estado">
-                    <option value="">-- Selecciona estado --</option>
-                    <option value="PENDIENTE">PENDIENTE</option>
-                    <option value="CONFIRMADA">CONFIRMADA</option>
-                    <option value="CANCELADA">CANCELADA</option>
-                </select>
-            </div>
+      <div class="form-group full-width">
+        <label>Motivo</label>
+        <textarea [(ngModel)]="formulario.motivo" rows="4"
+                  style="resize:none;" placeholder="Motivo de la cita"></textarea>
+      </div>
 
-            <div class="form-group">
-                <label>Fecha y Hora</label>
-                <input type="datetime-local" [(ngModel)]="formulario.fechaHora" />
-            </div>
-
-            <div class="form-group full-width">
-                <label>Motivo</label>
-                <textarea [(ngModel)]="formulario.motivo" rows="4" style="resize:none;" placeholder="Motivo de la cita">
-        </textarea>
-            </div>
-
-        </div>
-
-        <div class="form-actions">
-            <button class="btn-guardar" (click)="guardar()">Guardar</button>
-            <button class="btn-cancelar" (click)="irAdmin()">Cancelar</button>
-        </div>
     </div>
 
-    <table class="tabla">
-        <thead>
-            <tr>
-                <th>Paciente</th>
-                <th>Médico</th>
-                <th>Especialidad</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Motivo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
+    <div class="form-actions">
+      <button class="btn-guardar" (click)="guardar()">Guardar</button>
+      <button class="btn-cancelar" (click)="irAdmin()">Cancelar</button>
+    </div>
+  </div>
 
-        <tbody>
-            <tr *ngFor="let c of citas">
-                <td>{{ c.paciente?.nombres }} {{ c.paciente?.apellidos }}</td>
-                <td>{{ c.medico?.nombres }} {{ c.medico?.apellidos }}</td>
-                <td>{{ c.medico?.especialidad || 'N/A' }}</td>
-                <td>{{ c.fechaHora | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td>{{ c.estado }}</td>
-                <td>{{ c.motivo }}</td>
-
-                <td>
-                    <button class="btn-editar" (click)="editar(c)">Editar</button>
-                    <button class="btn-eliminar" (click)="eliminar(c.id)">Eliminar</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Paciente</th>
+        <th>Médico</th>
+        <th>Especialidad</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Motivo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of citas">
+        <td>{{ c.paciente?.nombres }} {{ c.paciente?.apellidos }}</td>
+        <td>{{ c.medico?.nombres }} {{ c.medico?.apellidos }}</td>
+        <td>{{ c.medico?.especialidad?.nombre || 'N/A' }}</td>
+        <td>{{ c.fechaHora | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>{{ c.estado }}</td>
+        <td>{{ c.motivo }}</td>
+        <td>
+          <button class="btn-editar" (click)="editar(c)">Editar</button>
+          <button class="btn-eliminar" (click)="eliminar(c.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

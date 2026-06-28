@@ -5,10 +5,10 @@
   </div>
 
   <div class="buscador">
-  <input type="text" [(ngModel)]="busqueda" placeholder="Buscar por nombre..." />
-  <input type="text" [(ngModel)]="busquedaEspecialidad" placeholder="Buscar por especialidad..." />
-  <button class="btn-limpiar" (click)="limpiarBuscador()">Limpiar</button>
-</div>
+    <input type="text" [(ngModel)]="busqueda" placeholder="Buscar por nombre..." />
+    <input type="text" [(ngModel)]="busquedaEspecialidad" placeholder="Buscar por especialidad..." />
+    <button class="btn-limpiar" (click)="limpiarBuscador()">Limpiar</button>
+  </div>
 
   <div class="formulario">
     <h3>{{ modoEdicion ? 'Editar Médico' : 'Nuevo Médico' }}</h3>
@@ -30,14 +30,12 @@
         <input type="email" [(ngModel)]="formulario.correo" placeholder="Correo" />
       </div>
       <div class="form-group">
-  <label>Especialidad</label>
-  <select [(ngModel)]="formulario.especialidadId">
-    <option [value]="null">Seleccionar especialidad</option>
-    <option *ngFor="let esp of especialidades" [value]="esp.id">
-      {{ esp.nombre }}
-    </option>
-  </select>
-</div>
+        <label>Especialidad</label>
+        <select [(ngModel)]="formulario.especialidadId">
+          <option [value]="null">Seleccionar especialidad</option>
+          <option *ngFor="let esp of especialidades" [value]="esp.id">{{ esp.nombre }}</option>
+        </select>
+      </div>
     </div>
     <div class="form-actions">
       <button type="button" class="btn-guardar" (click)="guardar()">Guardar</button>
@@ -47,27 +45,99 @@
 
   <table class="tabla">
     <thead>
-    <tr>
-      <th>Nombres</th>
-      <th>Apellidos</th>
-      <th>Teléfono</th>
-      <th>Correo</th>
-      <th>Especialidad</th>
-      <th>Acciones</th>
-    </tr>
+      <tr>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>Teléfono</th>
+        <th>Correo</th>
+        <th>Especialidad</th>
+        <th>Acciones</th>
+      </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let medico of medicosFiltrados">
-      <td>{{ medico.nombres }}</td>
-      <td>{{ medico.apellidos }}</td>
-      <td>{{ medico.telefono }}</td>
-      <td>{{ medico.correo }}</td>
-      <td>{{ medico.especialidad?.nombre }}</td>
-      <td>
-        <button type="button" class="btn-editar" (click)="editar(medico)">Editar</button>
-        <button type="button" class="btn-eliminar" (click)="eliminar(medico.id)">Eliminar</button>
-      </td>
-    </tr>
+      <ng-container *ngFor="let medico of medicosFiltrados">
+
+        <tr>
+          <td>{{ medico.nombres }}</td>
+          <td>{{ medico.apellidos }}</td>
+          <td>{{ medico.telefono }}</td>
+          <td>{{ medico.correo }}</td>
+          <td>{{ medico.especialidad?.nombre }}</td>
+          <td>
+            <button type="button" class="btn-editar" (click)="editar(medico)">Editar</button>
+            <button type="button" class="btn-horarios" (click)="verHorarios(medico)">
+               {{ medicoHorarios?.id === medico.id ? 'Cerrar' : 'Horarios' }}
+              </button>
+            <button type="button" class="btn-eliminar" (click)="eliminar(medico.id)">Eliminar</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="medicoHorarios?.id === medico.id" class="fila-horarios">
+          <td colspan="6">
+            <div class="horarios-panel">
+
+              <div class="horarios-panel-header">
+                <h4>Horarios de {{ medicoHorarios.nombres }} {{ medicoHorarios.apellidos }}</h4>
+                <button type="button" class="btn-cancelar" (click)="cerrarHorarios()">Cerrar</button>
+              </div>
+
+              <div class="horario-form">
+                <h5>{{ modoEdicionHorario ? 'Editar horario' : 'Nuevo horario' }}</h5>
+                <div class="form-grid-horario">
+                  <div class="form-group">
+                    <label>Día</label>
+                    <select [(ngModel)]="formularioHorario.diaSemana">
+                      <option value="">-- Selecciona día --</option>
+                      <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Hora inicio</label>
+                    <input type="time" [(ngModel)]="formularioHorario.horaInicio" />
+                  </div>
+                  <div class="form-group">
+                    <label>Hora fin</label>
+                    <input type="time" [(ngModel)]="formularioHorario.horaFin" />
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn-guardar" (click)="guardarHorario()">
+                    {{ modoEdicionHorario ? 'Actualizar' : 'Agregar' }}
+                  </button>
+                  <button type="button" class="btn-cancelar" (click)="nuevoHorario()">Cancelar</button>
+                </div>
+              </div>
+
+              <table class="tabla-horarios" *ngIf="disponibilidades.length > 0; else sinHorarios">
+                <thead>
+                  <tr>
+                    <th>Día</th>
+                    <th>Hora inicio</th>
+                    <th>Hora fin</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let d of disponibilidades">
+                    <td>{{ d.diaSemana }}</td>
+                    <td>{{ d.horaInicio }}</td>
+                    <td>{{ d.horaFin }}</td>
+                    <td>
+                      <button type="button" class="btn-editar" (click)="editarHorario(d)">Editar</button>
+                      <button type="button" class="btn-eliminar" (click)="eliminarHorario(d.id)">Eliminar</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <ng-template #sinHorarios>
+                <p class="sin-horarios">Este médico no tiene horarios registrados.</p>
+              </ng-template>
+
+            </div>
+          </td>
+        </tr>
+
+      </ng-container>
     </tbody>
   </table>
 </div>

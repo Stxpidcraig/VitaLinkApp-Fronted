@@ -1,0 +1,38 @@
+<div class="historia-container">
+
+  <div *ngIf="cargando">Cargando historia clínica...</div>
+
+  <div *ngIf="error" class="error">
+    No se encontró historia clínica para este paciente.
+  </div>    
+
+  <div *ngIf="historia && !cargando">
+    <div class="paciente-info">
+      <h2>Historia Clínica</h2>
+      <p><strong>Paciente:</strong> {{ historia.nombres }} {{ historia.apellidos }}</p>
+      <p><strong>DNI:</strong> {{ historia.dni }}</p>
+      <p><strong>Último peso:</strong> {{ historia.ultimoPesoKg }} kg</p>
+      <p><strong>Última altura:</strong> {{ historia.ultimaAlturaCm }} cm</p>
+      <p><strong>Última actualización:</strong> {{ historia.fechaUltimaActualizacion | date:'dd/MM/yyyy HH:mm' }}</p>
+    </div>
+
+    <h3>Consultas</h3>
+    <div *ngFor="let c of historia.consultas" class="consulta-card">
+      <div class="consulta-header">
+        <span><strong>Fecha:</strong> {{ c.fechaAtencion }}</span>
+        <span><strong>Médico ID:</strong> {{ c.medicoId }}<br><strong>Médico:</strong> {{ getMedicoNombre(c.medicoId) }}</span>
+      </div>
+      <p><strong>Motivo:</strong> {{ c.motivoConsulta }}</p>
+      <p><strong>Observaciones:</strong> {{ c.observaciones }}</p>
+      <div *ngIf="c.diagnostico">
+        <p><strong>Diagnóstico:</strong> {{ c.diagnostico.descripcion }}</p>
+      </div>
+      <div *ngIf="c.prescripcion">
+        <p><strong>Medicamento:</strong> {{ c.prescripcion.medicamento }}</p>
+        <p><strong>Dosis:</strong> {{ c.prescripcion.dosis }} - {{ c.prescripcion.frecuencia }} por {{ c.prescripcion.duracionDias }} días</p>
+      </div>
+      <p><strong>Peso:</strong> {{ c.pesoKg }} kg | <strong>Altura:</strong> {{ c.alturaCm }} cm</p>
+    </div>
+  </div>
+
+</div>

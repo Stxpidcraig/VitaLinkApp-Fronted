@@ -79,6 +79,7 @@
       <td>{{ paciente.telefono }}</td>
       <td>{{ paciente.correo }}</td>
       <td>
+        <button class="btn-historia" (click)="verHistoria(paciente.id)">Ver Historia</button>
         <button class="btn-editar" (click)="editar(paciente)">Editar</button>
         <button class="btn-eliminar" (click)="eliminar(paciente.id)">Eliminar</button>
       </td>
